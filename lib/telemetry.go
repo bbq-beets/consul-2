@@ -15,6 +15,7 @@ import (
 	"github.com/armon/go-metrics/circonus"
 	"github.com/armon/go-metrics/datadog"
 	"github.com/armon/go-metrics/prometheus"
+	hcptelemetry "github.com/hashicorp/consul/agent/hcp/telemetry"
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-multierror"
 	prometheuscore "github.com/prometheus/client_golang/prometheus"
@@ -324,6 +325,10 @@ func circonusSink(cfg TelemetryConfig, _ string) (metrics.MetricSink, error) {
 	return sink, nil
 }
 
+func hcpSink(cfg TelemetryConfig, _ string) (metrics.MetricSink, error) {
+	return hcptelemetry.NewOTLPSink()
+}
+
 func configureSinks(cfg TelemetryConfig, memSink metrics.MetricSink) (metrics.FanoutSink, error) {
 	metricsConf := metrics.DefaultConfig(cfg.MetricsPrefix)
 	metricsConf.EnableHostname = !cfg.DisableHostname
@@ -349,6 +354,7 @@ func configureSinks(cfg TelemetryConfig, memSink metrics.MetricSink) (metrics.Fa
 	addSink(dogstatdSink)
 	addSink(circonusSink)
 	addSink(prometheusSink)
+	addSink(hcpSink)
 
 	if len(sinks) > 0 {
 		sinks = append(sinks, memSink)
