@@ -341,6 +341,11 @@ func (s *Server) establishLeadership(ctx context.Context) error {
 		s.startLogVerification(ctx)
 	}
 
+	if s.config.Reporting.License.Enabled {
+		s.reportingManager.logger.Info("license reporting is enabled")
+		s.reportingManager.startReportingAgent()
+	}
+
 	s.logger.Debug("successfully established leadership", "duration", time.Since(start))
 	return nil
 }
@@ -377,6 +382,8 @@ func (s *Server) revokeLeadership() {
 	s.resetConsistentReadReady()
 
 	s.autopilot.DisableReconciliation()
+
+	s.reportingManager.stopReportingAgent()
 }
 
 // initializeACLs is used to setup the ACLs if we are the leader

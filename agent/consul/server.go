@@ -424,6 +424,9 @@ type Server struct {
 	// routineManager is responsible for managing longer running go routines
 	// run by the Server
 	routineManager *routine.Manager
+
+	// handles metrics reporting to HashiCorp
+	reportingManager *ReportingManager
 }
 
 type connHandler interface {
@@ -748,6 +751,9 @@ func NewServer(config *Config, flat Deps, externalGRPCServer *grpc.Server, incom
 
 	s.overviewManager = NewOverviewManager(s.logger, s.fsm, s.config.MetricsReportingInterval)
 	go s.overviewManager.Run(&lib.StopChannelContext{StopCh: s.shutdownCh})
+
+	s.reportingManager = NewReportingManager(s.logger)
+	s.reportingManager.initReporting(flat)
 
 	// Initialize external gRPC server
 	s.setupExternalGRPC(config, s.raftStorageBackend, logger)
