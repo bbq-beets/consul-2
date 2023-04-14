@@ -41,13 +41,7 @@ func (s *ResourceGenerator) endpointsFromSnapshot(cfgSnap *proxycfg.ConfigSnapsh
 	case structs.ServiceKindIngressGateway:
 		return s.endpointsFromSnapshotIngressGateway(cfgSnap)
 	case structs.ServiceKindAPIGateway:
-		// TODO Find a cleaner solution, can't currently pass unexported property types
-		var err error
-		cfgSnap.IngressGateway, err = cfgSnap.APIGateway.ToIngress(cfgSnap.Datacenter)
-		if err != nil {
-			return nil, err
-		}
-		return s.endpointsFromSnapshotIngressGateway(cfgSnap)
+		return s.endpointsFromSnapshotAPIGateway(cfgSnap)
 	default:
 		return nil, fmt.Errorf("Invalid service kind: %v", cfgSnap.Kind)
 	}
@@ -522,6 +516,41 @@ func (s *ResourceGenerator) endpointsFromSnapshotIngressGateway(cfgSnap *proxycf
 			}
 			resources = append(resources, es...)
 			createdClusters[uid] = true
+		}
+	}
+	return resources, nil
+}
+
+func (s *ResourceGenerator) endpointsFromSnapshotAPIGateway(cfgSnap *proxycfg.ConfigSnapshot) ([]proto.Message, error) {
+	var resources []proto.Message
+	createdClusters := make(map[proxycfg.UpstreamID]bool)
+	for _, upstreamMaps := range cfgSnap.APIGateway.Upstreams {
+		for _, upstreams := range upstreamMaps {
+			for _, u := range upstreams {
+				uid := proxycfg.NewUpstreamID(&u)
+
+				// If we've already created endpoints for this upstream, skip it. Multiple listeners may
+				// reference the same upstream, so we don't need to create duplicate endpoints in that case.
+				if createdClusters[uid] {
+					continue
+				}
+
+				es, err := s.endpointsFromDiscoveryChain(
+					uid,
+					cfgSnap.APIGateway.DiscoveryChain[uid],
+					cfgSnap,
+					proxycfg.GatewayKey{Datacenter: cfgSnap.Datacenter, Partition: u.DestinationPartition},
+					u.Config,
+					cfgSnap.APIGateway.WatchedUpstreamEndpoints[uid],
+					cfgSnap.APIGateway.WatchedGatewayEndpoints[uid],
+					false,
+				)
+				if err != nil {
+					return nil, err
+				}
+				resources = append(resources, es...)
+				createdClusters[uid] = true
+			}
 		}
 	}
 	return resources, nil
