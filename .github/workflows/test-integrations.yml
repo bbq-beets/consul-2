@@ -361,6 +361,7 @@ jobs:
             --raw-command \
             --format=short-verbose \
             --packages="${PACKAGE_NAMES}" \
+            --rerun-fails=3 \
             -- \
             go test \
             -tags "${{ env.GOTAGS }}" \
