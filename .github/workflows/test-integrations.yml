@@ -42,7 +42,7 @@ jobs:
     needs: [setup]
     uses: ./.github/workflows/reusable-dev-build.yml
     with:
-      runs-on: ${{ needs.setup.outputs.compute-xl }}
+      runs-on: imagegenteam-ubuntu2204-16cores
       repository-name: ${{ github.repository }}
       uploaded-binary-name: 'consul-bin'
     secrets:
@@ -253,7 +253,7 @@ jobs:
     #       path: ${{ env.TEST_RESULTS_DIR }}
 
   compatibility-integration-test:
-    runs-on: ${{ fromJSON(needs.setup.outputs.compute-xl) }}
+    runs-on: imagegenteam-ubuntu2204-16cores
     needs:
       - setup
       - dev-build
@@ -317,7 +317,7 @@ jobs:
           path: ${{ env.TEST_RESULTS_DIR }}
 
   upgrade-integration-test:
-    runs-on: ${{ fromJSON(needs.setup.outputs.compute-xl) }}
+    runs-on: imagegenteam-ubuntu2204-16cores
     needs:
       - setup
       - dev-build
@@ -383,21 +383,3 @@ jobs:
         with:
           name: ${{ env.TEST_RESULTS_ARTIFACT_NAME }}
           path: ${{ env.TEST_RESULTS_DIR }}
-
-  test-integrations-success:
-    needs: 
-    - setup
-    # - generate-envoy-job-matrices
-    - dev-build
-    # - nomad-integration-test
-    # - vault-integration-test
-    # - envoy-integration-test
-    - compatibility-integration-test
-    - upgrade-integration-test
-    runs-on: ${{ fromJSON(needs.setup.outputs.compute-small) }}
-    if: |
-      (always() && ! cancelled()) &&
-      !contains(needs.*.result, 'failure') &&
-      !contains(needs.*.result, 'cancelled')
-    steps:
-      - run: echo "test-integrations succeeded"
