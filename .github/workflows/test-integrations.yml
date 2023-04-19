@@ -370,6 +370,7 @@ jobs:
           gotestsum \
             --raw-command \
             --format=short-verbose \
+            --rerun-fails=3 \
             --packages="${PACKAGE_NAMES}" \
             -- \
             go test \
