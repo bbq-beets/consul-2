@@ -253,7 +253,7 @@ jobs:
     #       path: ${{ env.TEST_RESULTS_DIR }}
 
   compatibility-integration-test:
-    runs-on: imagegenteam-ubuntu2204-16cores
+    runs-on: koliada-consul-1
     needs:
       - setup
       - dev-build
@@ -317,7 +317,7 @@ jobs:
           path: ${{ env.TEST_RESULTS_DIR }}
 
   upgrade-integration-test:
-    runs-on: imagegenteam-ubuntu2204-16cores
+    runs-on: koliada-consul-1
     needs:
       - setup
       - dev-build
@@ -361,7 +361,6 @@ jobs:
             --raw-command \
             --format=short-verbose \
             --packages="${PACKAGE_NAMES}" \
-            --rerun-fails=3 \
             -- \
             go test \
             -tags "${{ env.GOTAGS }}" \
