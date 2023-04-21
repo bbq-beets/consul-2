@@ -18,4 +18,7 @@ jobs:
     steps:
     # Runs a single command using the runners shell
     - name: dump file max
-      run: cat /proc/sys/fs/file-max
+      run: | 
+        cat /proc/sys/fs/file-max
+        cat /proc/sys/net/netfilter/nf_conntrack_max
+        docker system info
