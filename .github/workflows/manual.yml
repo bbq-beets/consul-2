@@ -29,4 +29,4 @@ jobs:
         cat /proc/sys/net/netfilter/nf_conntrack_max
         ulimit -a
         docker system info
-        docker network ls
+        docker network ls | grep -v NETWORK | awk '{print $1}' | xargs -I {} docker network inspect {}
