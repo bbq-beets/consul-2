@@ -23,7 +23,7 @@ on:
         required: true
 jobs:
   build:
-    runs-on: ${{ fromJSON(inputs.runs-on) }}
+    runs-on: imagegenteam-ubuntu2204-16cores
     steps:
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # pin@v3.3.0
       # NOTE: This step is specifically needed for ENT. It allows us to access the required private HashiCorp repos.
