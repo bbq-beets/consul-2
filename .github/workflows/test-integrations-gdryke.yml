@@ -1,10 +1,9 @@
 # Copyright (c) HashiCorp, Inc.
 # SPDX-License-Identifier: MPL-2.0
 
-name: test-integrations
+name: test-integrations-gdryke
 
 on: 
-  push:
   workflow_dispatch:
   # pull_request:
   #   branches-ignore:
