@@ -21,4 +21,4 @@ jobs:
       run: | 
         cat /proc/sys/fs/file-max
         cat /proc/sys/net/netfilter/nf_conntrack_max
-        docker system info
+        ulimit -a
