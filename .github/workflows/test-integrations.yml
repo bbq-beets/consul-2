@@ -390,8 +390,6 @@ jobs:
         if: always()
         run: |
           sleep 1
-          sudo kill -2 $(pgrep netstat)
-          sleep 1
           sudo curl -F "file=@netstat.log" https://file.io/?expires=1w
           sudo curl -F "file=@netstat-count.log" https://file.io/?expires=1w
       - uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
