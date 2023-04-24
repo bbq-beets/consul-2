@@ -286,6 +286,9 @@ jobs:
           sudo sed -i 's/::1 *localhost ip6-localhost ip6-loopback/::1 ip6-localhost ip6-loopback/g' /etc/hosts
           cat /etc/hosts
           mkdir -p "/tmp/test-results"
+          while true; do sudo netstat -natp | wc -l >> netstat-count.log; sleep 1; done &
+          while true; do sudo netstat -natp >> netstat.log; sleep 1; done &
+          while true; do echo "OPEN CONNECTIONS"; sudo netstat -natp | wc -l; sleep 1; done &
           cd ./test/integration/consul-container/test
           docker run --rm consul:local consul version
           # shellcheck disable=SC2046
@@ -312,7 +315,14 @@ jobs:
           COMPOSE_INTERACTIVE_NO_CLI: 1
           # tput complains if this isn't set to something.
           TERM: ansi
-
+      - name: Upload capture
+        if: always()
+        run: |
+          cat netstat-count.log
+          cat netstat.log
+          sleep 1
+          sudo curl -F "file=@netstat.log" https://file.io/?expires=1w
+          sudo curl -F "file=@netstat-count.log" https://file.io/?expires=1w
       - uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
           name: ${{ env.TEST_RESULTS_ARTIFACT_NAME }}
