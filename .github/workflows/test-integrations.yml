@@ -25,7 +25,7 @@ env:
 
 jobs:
   setup:
-    runs-on: imagegenteam-ubuntu2204-16cores
+    runs-on: ubuntu-latest
     name: Setup
     outputs:
       compute-small: ${{ steps.runners.outputs.compute-small }}
@@ -42,7 +42,7 @@ jobs:
     needs: [setup]
     uses: ./.github/workflows/reusable-dev-build.yml
     with:
-      runs-on: imagegenteam-ubuntu2204-16cores
+      runs-on: imagegenteam-marketplace-test
       repository-name: ${{ github.repository }}
       uploaded-binary-name: 'consul-bin'
     secrets:
@@ -253,7 +253,7 @@ jobs:
     #       path: ${{ env.TEST_RESULTS_DIR }}
 
   compatibility-integration-test:
-    runs-on: imagegenteam-ubuntu2204-16cores
+    runs-on: imagegenteam-marketplace-test
     needs:
       - setup
       - dev-build
@@ -325,7 +325,7 @@ jobs:
           path: ${{ env.TEST_RESULTS_DIR }}
 
   upgrade-integration-test:
-    runs-on: imagegenteam-ubuntu2204-16cores
+    runs-on: imagegenteam-marketplace-test
     needs:
       - setup
       - dev-build
