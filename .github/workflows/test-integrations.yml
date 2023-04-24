@@ -361,7 +361,9 @@ jobs:
           cd ./test/integration/consul-container/test/upgrade
           docker run --rm consul:local consul version
           PACKAGE_NAMES=$(go list -tags "${{ env.GOTAGS }}" ./...)
-          while true; do echo "OPEN CONNECTIONS"; sudo netstat -natp | wc -l sleep 1; done &
+          while true; do sudo netstat -natp | wc -l) >> netstat-count.log; sleep 1; done &
+          while true; do sudo netstat -natp >> netstat.log; sleep 1; done &
+          while true; do echo "OPEN CONNECTIONS"; sudo netstat -natp | wc -l; sleep 1; done &
           gotestsum \
             --raw-command \
             --format=short-verbose \
