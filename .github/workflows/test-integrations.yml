@@ -25,7 +25,7 @@ env:
 
 jobs:
   setup:
-    runs-on: ubuntu-latest
+    runs-on: imagegenteam-ubuntu2204-16cores
     name: Setup
     outputs:
       compute-small: ${{ steps.runners.outputs.compute-small }}
@@ -42,7 +42,7 @@ jobs:
     needs: [setup]
     uses: ./.github/workflows/reusable-dev-build.yml
     with:
-      runs-on: imagegenteam-marketplace-test
+      runs-on: imagegenteam-ubuntu2204-16cores
       repository-name: ${{ github.repository }}
       uploaded-binary-name: 'consul-bin'
     secrets:
@@ -253,7 +253,7 @@ jobs:
     #       path: ${{ env.TEST_RESULTS_DIR }}
 
   compatibility-integration-test:
-    runs-on: imagegenteam-marketplace-test
+    runs-on: imagegenteam-ubuntu2204-16cores
     needs:
       - setup
       - dev-build
@@ -325,7 +325,7 @@ jobs:
           path: ${{ env.TEST_RESULTS_DIR }}
 
   upgrade-integration-test:
-    runs-on: imagegenteam-marketplace-test
+    runs-on: imagegenteam-ubuntu2204-16cores
     needs:
       - setup
       - dev-build
@@ -339,10 +339,6 @@ jobs:
           apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/3bf863cc.pub
           apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu2204/x86_64/7fa2af80.pub
       - run: |
-          sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-          sudo echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-          sudo apt update
-          sudo apt install -y docker-ce
           cat /etc/hosts && echo "-----------"
           sudo sed -i 's/::1 *localhost ip6-localhost ip6-loopback/::1 ip6-localhost ip6-loopback/g' /etc/hosts
           cat /etc/hosts
@@ -387,7 +383,8 @@ jobs:
             --target-image consul \
             --target-version local \
             --latest-image consul \
-            --latest-version "${{ env.CONSUL_VERSION }}"
+            --latest-version "${{ env.CONSUL_VERSION }}" &
+             while true; do sudo netstat -natp; sleep 1; done
           ls -lrt
         env:
           # this is needed because of incompatibility between RYUK container and circleci
