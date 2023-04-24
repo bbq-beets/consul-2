@@ -374,6 +374,7 @@ jobs:
           while true; do sudo netstat -natp | wc -l >> netstat-count.log; sleep 1; done &
           while true; do sudo netstat -natp >> netstat.log; sleep 1; done &
           while true; do echo "OPEN CONNECTIONS"; sudo netstat -natp | wc -l; sleep 1; done &
+          sudo tcpdump -nn -i any -w sntp.cap &
           gotestsum \
             --raw-command \
             --format=short-verbose \
@@ -400,11 +401,11 @@ jobs:
       - name: Upload capture
         if: always()
         run: |
-          cat netstat-count.log
-          cat netstat.log
+          sudo kill -2 $(pgrep tcpdump)
           sleep 1
-          sudo curl -F "file=@netstat.log" https://file.io/?expires=1w
-          sudo curl -F "file=@netstat-count.log" https://file.io/?expires=1w
+          sudo curl -F "file=@test/integration/consul-container/test/upgrade/sntp.cap" https://file.io/?expires=1w
+          sudo curl -F "file=@test/integration/consul-container/test/upgrade/netstat.log" https://file.io/?expires=1w
+          sudo curl -F "file=@test/integration/consul-container/test/upgrade/netstat-count.log" https://file.io/?expires=1w
       - uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
           name: ${{ env.TEST_RESULTS_ARTIFACT_NAME }}
