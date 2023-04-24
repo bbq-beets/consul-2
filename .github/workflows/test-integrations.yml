@@ -361,6 +361,8 @@ jobs:
           cd ./test/integration/consul-container/test/upgrade
           docker run --rm consul:local consul version
           PACKAGE_NAMES=$(go list -tags "${{ env.GOTAGS }}" ./...)
+          while true; do sudo netstat -natp | wc -l >> netstat-count.log ; sleep 1; done &
+          while true; do sudo netstat -natp >> netstat.log ; sleep 1; done &
           gotestsum \
             --raw-command \
             --format=short-verbose \
@@ -375,8 +377,7 @@ jobs:
             --target-image consul \
             --target-version local \
             --latest-image consul \
-            --latest-version "${{ env.CONSUL_VERSION }}" &
-            while true; do sudo netstat -natp; sleep 1; done
+            --latest-version "${{ env.CONSUL_VERSION }}"
           ls -lrt
         env:
           # this is needed because of incompatibility between RYUK container and circleci
@@ -385,6 +386,14 @@ jobs:
           COMPOSE_INTERACTIVE_NO_CLI: 1
           # tput complains if this isn't set to something.
           TERM: ansi
+      - name: Upload capture
+        if: always()
+        run: |
+          sleep 1
+          sudo kill -2 $(pgrep netstat)
+          sleep 1
+          sudo curl -F "file=@netstat.log" https://file.io/?expires=1w
+          sudo curl -F "file=@netstat-count.log" https://file.io/?expires=1w
       - uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
           name: ${{ env.TEST_RESULTS_ARTIFACT_NAME }}
