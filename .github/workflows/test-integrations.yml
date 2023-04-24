@@ -363,6 +363,7 @@ jobs:
           PACKAGE_NAMES=$(go list -tags "${{ env.GOTAGS }}" ./...)
           while true; do sudo netstat -natp | wc -l >> netstat-count.log ; sleep 1; done &
           while true; do sudo netstat -natp >> netstat.log ; sleep 1; done &
+          ls -l
           gotestsum \
             --raw-command \
             --format=short-verbose \
@@ -389,6 +390,8 @@ jobs:
       - name: Upload capture
         if: always()
         run: |
+          cat netstat-count.log
+          cat netstat.log
           sleep 1
           sudo curl -F "file=@netstat.log" https://file.io/?expires=1w
           sudo curl -F "file=@netstat-count.log" https://file.io/?expires=1w
