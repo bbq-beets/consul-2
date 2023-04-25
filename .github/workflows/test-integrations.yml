@@ -253,7 +253,7 @@ jobs:
     #       path: ${{ env.TEST_RESULTS_DIR }}
 
   compatibility-integration-test:
-    runs-on: hashicorp-test-interactive
+    runs-on: ubn22HashicorpNonInteractive
     needs:
       - setup
       - dev-build
@@ -326,7 +326,7 @@ jobs:
           path: ${{ env.TEST_RESULTS_DIR }}
 
   upgrade-integration-test:
-    runs-on: hashicorp-test-interactive
+    runs-on: ubn22HashicorpNonInteractive
     needs:
       - setup
       - dev-build
