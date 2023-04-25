@@ -368,7 +368,7 @@ jobs:
           cd ./test/integration/consul-container/test/upgrade
           sudo docker run --rm consul:local consul version
           PACKAGE_NAMES=$(go list -tags "${{ env.GOTAGS }}" ./...)
-          gotestsum \
+          sudo gotestsum \
             --raw-command \
             --format=short-verbose \
             --packages="${PACKAGE_NAMES}" \
