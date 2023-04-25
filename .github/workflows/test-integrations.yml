@@ -304,7 +304,6 @@ jobs:
             --target-version local \
             --latest-image consul \
             --latest-version latest
-            --rerun-fails=3
             ls -lrt
         env:
           # this is needed because of incompatibility between RYUK container and circleci
@@ -384,7 +383,6 @@ jobs:
             --target-version local \
             --latest-image consul \
             --latest-version "${{ env.CONSUL_VERSION }}"
-            --rerun-fails=3
             
           ls -lrt
         env:
