@@ -102,6 +102,7 @@ jobs:
         run: |
           docker system info
           docker network ls | grep -v NETWORK | awk '{print $1}' | xargs -I {} docker network inspect {}
+          cat /etc/hosts
         env:
           # this is needed because of incompatibility between RYUK container and circleci
           GOTESTSUM_JUNITFILE: ${{ env.TEST_RESULTS_DIR }}/results.xml
@@ -183,6 +184,7 @@ jobs:
         run: |
           docker system info
           docker network ls | grep -v NETWORK | awk '{print $1}' | xargs -I {} docker network inspect {}
+          cat /etc/hosts
         env:
           # this is needed because of incompatibility between RYUK container and circleci
           GOTESTSUM_JUNITFILE: ${{ env.TEST_RESULTS_DIR }}/results.xml
