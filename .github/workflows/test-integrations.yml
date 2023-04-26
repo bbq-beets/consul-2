@@ -25,7 +25,7 @@ env:
 
 jobs:
   setup:
-    runs-on: ubuntu-latest
+    runs-on: Ubn22HashicorpMarket
     name: Setup
     outputs:
       compute-small: ${{ steps.runners.outputs.compute-small }}
@@ -42,7 +42,7 @@ jobs:
     needs: [setup]
     uses: ./.github/workflows/reusable-dev-build.yml
     with:
-      runs-on: imagegenteam-ubuntu2204-16cores
+      runs-on: Ubn22HashicorpMarket
       repository-name: ${{ github.repository }}
       uploaded-binary-name: 'consul-bin'
     secrets:
