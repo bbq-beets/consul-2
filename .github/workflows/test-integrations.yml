@@ -282,7 +282,7 @@ jobs:
           sudo echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
           sudo apt update
           sudo apt install -y docker-ce
-          docker build -t consul:local -f ./build-support/docker/Consul-Dev.dockerfile .
+          sudo docker build -t consul:local -f ./build-support/docker/Consul-Dev.dockerfile .
       - name: Compatibility Integration Tests
         run: |
           cat /etc/hosts && echo "-----------"
@@ -290,9 +290,9 @@ jobs:
           cat /etc/hosts
           mkdir -p "/tmp/test-results"
           cd ./test/integration/consul-container/test
-          docker run --rm consul:local consul version
+          sudo docker run --rm consul:local consul version
           # shellcheck disable=SC2046
-          gotestsum \
+          sudo gotestsum \
             --raw-command \
             --format=short-verbose \
             --packages="./..." \
@@ -360,14 +360,14 @@ jobs:
         run: chmod +x consul
       - name: Build consul:local image
         run: |
-          docker build -t consul:local -f ./build-support/docker/Consul-Dev.dockerfile .
+          sudo docker build -t consul:local -f ./build-support/docker/Consul-Dev.dockerfile .
       - name: Upgrade Integration Tests
         run: |
           mkdir -p "${{ env.TEST_RESULTS_DIR }}"
           cd ./test/integration/consul-container/test/upgrade
-          docker run --rm consul:local consul version
+          sudo docker run --rm consul:local consul version
           PACKAGE_NAMES=$(go list -tags "${{ env.GOTAGS }}" ./...)
-          gotestsum \
+          sudo gotestsum \
             --raw-command \
             --format=short-verbose \
             --packages="${PACKAGE_NAMES}" \
