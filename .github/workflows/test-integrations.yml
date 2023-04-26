@@ -364,6 +364,8 @@ jobs:
             go test \
             -tags "${{ env.GOTAGS }}" \
             -timeout=30m \
+            -v \
+            -run TestStandardUpgradeToTarget_fromLatest \
             -json \
             ./... \
             --target-image consul \
