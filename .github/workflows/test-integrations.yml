@@ -253,7 +253,7 @@ jobs:
     #       path: ${{ env.TEST_RESULTS_DIR }}
 
   compatibility-integration-test:
-    runs-on: koliada-consul-1
+    runs-on: Ubn22HashicorpMarket
     needs:
       - setup
       - dev-build
@@ -322,7 +322,7 @@ jobs:
           path: ${{ env.TEST_RESULTS_DIR }}
 
   upgrade-integration-test:
-    runs-on: koliada-consul-1
+    runs-on: Ubn22HashicorpMarket
     needs:
       - setup
       - dev-build
@@ -370,7 +370,6 @@ jobs:
           gotestsum \
             --raw-command \
             --format=short-verbose \
-            --rerun-fails=3 \
             --packages="${PACKAGE_NAMES}" \
             -- \
             go test \
