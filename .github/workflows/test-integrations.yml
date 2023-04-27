@@ -360,12 +360,12 @@ jobs:
             --raw-command \
             --format=short-verbose \
             --packages="${PACKAGE_NAMES}" \
+            --rerun-fails=3 \
             -- \
             go test \
             -tags "${{ env.GOTAGS }}" \
             -timeout=30m \
             -v \
-            --short \
             -json \
             ./... \
             --target-image consul \
