@@ -3,7 +3,7 @@
 
 name: test-integrations-aloviedo
 
-on: [workflow_dispatch]
+on: [push, workflow_dispatch]
   # pull_request:
   #   branches-ignore:
   #     - stable-website
