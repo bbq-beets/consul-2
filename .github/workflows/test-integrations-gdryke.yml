@@ -168,12 +168,11 @@ jobs:
             --raw-command \
             --format=testname \
             --packages="${PACKAGE_NAMES}" \
-            --hide-summary=output \
+            --hide-summary=output,errors \
             -- \
             go test \
             -tags "${{ env.GOTAGS }}" \
             -timeout=30m \
-            -p=4 \
             -json \
             ./... \
             --target-image consul \
