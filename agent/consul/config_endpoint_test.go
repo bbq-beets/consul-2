@@ -1345,66 +1345,6 @@ func TestConfigEntry_ResolveServiceConfig_Upstreams(t *testing.T) {
 			},
 		},
 		{
-			name: "upstream config entries from UpstreamIDs and service-defaults",
-			entries: []structs.ConfigEntry{
-				&structs.ProxyConfigEntry{
-					Kind: structs.ProxyDefaults,
-					Name: structs.ProxyConfigGlobal,
-					Config: map[string]interface{}{
-						"protocol": "grpc",
-					},
-				},
-				&structs.ServiceConfigEntry{
-					Kind: structs.ServiceDefaults,
-					Name: "api",
-					UpstreamConfig: &structs.UpstreamConfiguration{
-						Overrides: []*structs.UpstreamConfig{
-							{
-								Name:     "mysql",
-								Peer:     "peer1", // This should be ignored for legacy UpstreamIDs mode
-								Protocol: "http",
-							},
-						},
-					},
-				},
-			},
-			request: structs.ServiceConfigRequest{
-				Name:       "api",
-				Datacenter: "dc1",
-				UpstreamIDs: []structs.ServiceID{
-					structs.NewServiceID("cache", nil),
-				},
-			},
-			expect: structs.ServiceConfigResponse{
-				ProxyConfig: map[string]interface{}{
-					"protocol": "grpc",
-				},
-				UpstreamIDConfigs: structs.OpaqueUpstreamConfigsDeprecated{
-					{
-						Upstream: structs.NewServiceID(
-							structs.WildcardSpecifier,
-							acl.DefaultEnterpriseMeta().WithWildcardNamespace(),
-						),
-						Config: map[string]interface{}{
-							"protocol": "grpc",
-						},
-					},
-					{
-						Upstream: structs.NewServiceID("cache", nil),
-						Config: map[string]interface{}{
-							"protocol": "grpc",
-						},
-					},
-					{
-						Upstream: structs.NewServiceID("mysql", nil),
-						Config: map[string]interface{}{
-							"protocol": "http",
-						},
-					},
-				},
-			},
-		},
-		{
 			name: "upstream config entries from UpstreamServiceNames and service-defaults",
 			entries: []structs.ConfigEntry{
 				&structs.ProxyConfigEntry{
@@ -1544,6 +1484,8 @@ func TestConfigEntry_ResolveServiceConfig_Upstreams(t *testing.T) {
 								Interval:                10,
 								MaxFailures:             2,
 								EnforcingConsecutive5xx: uintPointer(60),
+								MaxEjectionPercent:      uintPointer(61),
+								BaseEjectionTime:        durationPointer(62 * time.Second),
 							},
 						},
 						Overrides: []*structs.UpstreamConfig{
@@ -1578,6 +1520,8 @@ func TestConfigEntry_ResolveServiceConfig_Upstreams(t *testing.T) {
 								"Interval":                int64(10),
 								"MaxFailures":             int64(2),
 								"EnforcingConsecutive5xx": int64(60),
+								"MaxEjectionPercent":      int64(61),
+								"BaseEjectionTime":        uint64(62 * time.Second),
 							},
 							"mesh_gateway": map[string]interface{}{
 								"Mode": "none",
@@ -1592,6 +1536,8 @@ func TestConfigEntry_ResolveServiceConfig_Upstreams(t *testing.T) {
 								"Interval":                int64(10),
 								"MaxFailures":             int64(2),
 								"EnforcingConsecutive5xx": int64(60),
+								"MaxEjectionPercent":      int64(61),
+								"BaseEjectionTime":        uint64(62 * time.Second),
 							},
 							"mesh_gateway": map[string]interface{}{
 								"Mode": "local",
@@ -1763,9 +1709,6 @@ func TestConfigEntry_ResolveServiceConfig_Upstreams(t *testing.T) {
 			// Order of this slice is also not deterministic since it's populated from a map
 			sort.SliceStable(out.UpstreamConfigs, func(i, j int) bool {
 				return out.UpstreamConfigs[i].Upstream.String() < out.UpstreamConfigs[j].Upstream.String()
-			})
-			sort.SliceStable(out.UpstreamIDConfigs, func(i, j int) bool {
-				return out.UpstreamIDConfigs[i].Upstream.String() < out.UpstreamIDConfigs[j].Upstream.String()
 			})
 
 			require.Equal(t, tc.expect, out)
@@ -2037,9 +1980,9 @@ func TestConfigEntry_ResolveServiceConfig_Upstreams_Blocking(t *testing.T) {
 			&structs.ServiceConfigRequest{
 				Name:       "foo",
 				Datacenter: "dc1",
-				UpstreamIDs: []structs.ServiceID{
-					structs.NewServiceID("bar", nil),
-					structs.NewServiceID("other", nil),
+				UpstreamServiceNames: []structs.PeeredServiceName{
+					{ServiceName: structs.NewServiceName("bar", nil)},
+					{ServiceName: structs.NewServiceName("other", nil)},
 				},
 				QueryOptions: structs.QueryOptions{
 					MinQueryIndex: index,
@@ -2073,9 +2016,9 @@ func TestConfigEntry_ResolveServiceConfig_Upstreams_Blocking(t *testing.T) {
 			&structs.ServiceConfigRequest{
 				Name:       "foo",
 				Datacenter: "dc1",
-				UpstreamIDs: []structs.ServiceID{
-					structs.NewServiceID("bar", nil),
-					structs.NewServiceID("other", nil),
+				UpstreamServiceNames: []structs.PeeredServiceName{
+					{ServiceName: structs.NewServiceName("bar", nil)},
+					{ServiceName: structs.NewServiceName("other", nil)},
 				},
 			},
 			&out,
@@ -2116,9 +2059,9 @@ func TestConfigEntry_ResolveServiceConfig_Upstreams_Blocking(t *testing.T) {
 			&structs.ServiceConfigRequest{
 				Name:       "foo",
 				Datacenter: "dc1",
-				UpstreamIDs: []structs.ServiceID{
-					structs.NewServiceID("bar", nil),
-					structs.NewServiceID("other", nil),
+				UpstreamServiceNames: []structs.PeeredServiceName{
+					{ServiceName: structs.NewServiceName("bar", nil)},
+					{ServiceName: structs.NewServiceName("other", nil)},
 				},
 				QueryOptions: structs.QueryOptions{
 					MinQueryIndex: index,
@@ -2355,8 +2298,8 @@ func TestConfigEntry_ResolveServiceConfig_BlockOnNoChange(t *testing.T) {
 			func(minQueryIndex uint64) (*structs.QueryMeta, <-chan error) {
 				args := structs.ServiceConfigRequest{
 					Name: "foo",
-					UpstreamIDs: []structs.ServiceID{
-						structs.NewServiceID("bar", nil),
+					UpstreamServiceNames: []structs.PeeredServiceName{
+						{ServiceName: structs.NewServiceName("bar", nil)},
 					},
 				}
 				args.QueryOptions.MinQueryIndex = minQueryIndex
@@ -2701,4 +2644,8 @@ func Test_gateWriteToSecondary_AllowedKinds(t *testing.T) {
 
 func uintPointer(v uint32) *uint32 {
 	return &v
+}
+
+func durationPointer(d time.Duration) *time.Duration {
+	return &d
 }
