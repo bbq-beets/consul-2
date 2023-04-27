@@ -168,6 +168,7 @@ jobs:
             --raw-command \
             --format=testname \
             --packages="${PACKAGE_NAMES}" \
+            --hide-summary=output \
             -- \
             go test \
             -tags "${{ env.GOTAGS }}" \
