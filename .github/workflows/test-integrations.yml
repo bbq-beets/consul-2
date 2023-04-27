@@ -370,6 +370,7 @@ jobs:
             --format=short-verbose \
             --debug \
             --packages="./..." \
+            --rerun-fails \
             -- \
             go test \
             -p=1 \
@@ -402,7 +403,7 @@ jobs:
     - envoy-integration-test
     - compatibility-integration-test
     - upgrade-integration-test
-    runs-on: ${{ fromJSON(needs.setup.outputs.compute-small) }}
+    runs-on: imagegenteam-ubuntu2204-16cores
     if: ${{ always() }}
     steps:
       - name: evaluate upstream job results
