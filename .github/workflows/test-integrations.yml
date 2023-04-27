@@ -365,6 +365,7 @@ jobs:
             -tags "${{ env.GOTAGS }}" \
             -timeout=30m \
             -v \
+            --short \
             -json \
             ./... \
             --target-image consul \
