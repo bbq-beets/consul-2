@@ -365,7 +365,7 @@ jobs:
             go test \
             -tags "${{ env.GOTAGS }}" \
             -timeout=30m \
-            -p=2 \
+            -p=3 \
             -v \
             -json \
             ./... \
