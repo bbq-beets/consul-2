@@ -1,7 +1,7 @@
 # Copyright (c) HashiCorp, Inc.
 # SPDX-License-Identifier: MPL-2.0
 
-name: test-integrations
+name: test-integrations-aloviedo
 
 on: [workflow_dispatch]
   # pull_request:
