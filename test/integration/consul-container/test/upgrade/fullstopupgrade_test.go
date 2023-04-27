@@ -73,26 +73,12 @@ func TestStandardUpgradeToTarget_fromLatest(t *testing.T) {
 
 		// # Found this article https://discuss.hashicorp.com/t/consul-server-unable-to-join-consul-cluster/19068/2
 		// # Trying to see if DNS seach domains exist for the local cluster hostnames
+		t.Log("checking cat resolve.conf -----------")
 		cmd := exec.Command("cat", "/etc/resolv.conf")
 		_, err = cmd.Output()
 		if err != nil {
 			t.Log("could not run command: ", err)
 		}
-		t.Log("-----------")
-
-		cmd = exec.Command("nslookup", "hashicorp-consul-server-0.hashicorp-consul-server.consul.svc.cluster.local")
-		_, err = cmd.Output()
-		if err != nil {
-			t.Log("could not run command: ", err)
-		}
-		t.Log("-----------")
-
-		cmd = exec.Command("ping", "-c1", "hashicorp-consul-server-0.hashicorp-consul-server.consul.svc")
-		_, err = cmd.Output()
-		if err != nil {
-			t.Log("could not run command: ", err)
-		}
-		t.Log("-----------")
 
 		libcluster.WaitForLeader(t, cluster, client)
 		libcluster.WaitForMembers(t, client, numServers)
