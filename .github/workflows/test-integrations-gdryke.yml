@@ -189,7 +189,7 @@ jobs:
         env:
           # this is needed because of incompatibility between RYUK container and circleci
           GOTESTSUM_JUNITFILE: ${{ env.TEST_RESULTS_DIR }}/results.xml
-          GOTESTSUM_FORMAT: standard-verbose
+          GOTESTSUM_FORMAT: dots
           COMPOSE_INTERACTIVE_NO_CLI: 1
           # tput complains if this isn't set to something.
           TERM: ansi
