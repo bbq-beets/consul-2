@@ -350,6 +350,13 @@ jobs:
         run: chmod +x consul
       - name: Build consul:local image
         run: docker build -t consul:local -f ./build-support/docker/Consul-Dev.dockerfile .
+      - name: Check network connectivity
+        run: |
+          # Found this article https://discuss.hashicorp.com/t/consul-server-unable-to-join-consul-cluster/19068/2
+          # Trying to see if DNS seach domains exist for the local cluster hostnames
+          cat /etc/resolv.conf
+          nslookup hashicorp-consul-server-0.hashicorp-consul-server.consul.svc.cluster.local
+          ping -c1 hashicorp-consul-server-0.hashicorp-consul-server.consul.svc
       - name: Upgrade Integration Tests
         run: |
           mkdir -p "${{ env.TEST_RESULTS_DIR }}"
