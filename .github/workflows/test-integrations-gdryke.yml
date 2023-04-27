@@ -79,6 +79,7 @@ jobs:
           cat /etc/hosts
           mkdir -p "/tmp/test-results"
           cd ./test/integration/consul-container/test
+          sudo sysctl -w net.ipv4.tcp_tw_reuse=1
           docker run --rm consul:local consul version
           # shellcheck disable=SC2046
           gotestsum \
@@ -89,7 +90,6 @@ jobs:
             go test \
             -tags "" \
             -timeout=30m \
-            -p=4 \
             -json \
             $(go list ./... | grep -v upgrade) \
             --target-image consul \
@@ -159,19 +159,18 @@ jobs:
       - name: Upgrade Integration Tests
         run: |
           mkdir -p "${{ env.TEST_RESULTS_DIR }}"
+          sudo sysctl -w net.ipv4.tcp_tw_reuse=1
           cd ./test/integration/consul-container/test/upgrade
           docker run --rm consul:local consul version
           PACKAGE_NAMES=$(go list -tags "${{ env.GOTAGS }}" ./...)
           gotestsum \
             --raw-command \
             --format=short-verbose \
-            --rerun-fails=3 \
             --packages="${PACKAGE_NAMES}" \
             -- \
             go test \
             -tags "${{ env.GOTAGS }}" \
             -timeout=30m \
-            -p=4 \
             -json \
             ./... \
             --target-image consul \
