@@ -90,6 +90,7 @@ jobs:
             go test \
             -tags "" \
             -timeout=30m \
+            -p=4 \
             -json \
             $(go list ./... | grep -v upgrade) \
             --target-image consul \
@@ -171,6 +172,7 @@ jobs:
             go test \
             -tags "${{ env.GOTAGS }}" \
             -timeout=30m \
+            -p=4 \
             -json \
             ./... \
             --target-image consul \
