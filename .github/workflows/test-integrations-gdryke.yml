@@ -166,7 +166,7 @@ jobs:
           PACKAGE_NAMES=$(go list -tags "${{ env.GOTAGS }}" ./...)
           gotestsum \
             --raw-command \
-            --format=short-verbose \
+            --format=testname \
             --packages="${PACKAGE_NAMES}" \
             -- \
             go test \
