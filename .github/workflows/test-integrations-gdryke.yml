@@ -175,7 +175,7 @@ jobs:
             go test \
             -tags "${{ env.GOTAGS }}" \
             -timeout=30m \
-            -p 2 \
+            -p 1 \
             -json \
             ./... \
             --target-image consul \
