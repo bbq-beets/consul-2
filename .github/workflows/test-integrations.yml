@@ -366,7 +366,6 @@ jobs:
             --format=short-verbose \
             --debug \
             --packages="./..." \
-            --rerun-fails \
             -- \
             go test \
             -p=1 \
