@@ -84,6 +84,7 @@ jobs:
           sudo sysctl -w net.ipv6.conf.default.forwarding=1
           sudo sysctl -w net.ipv6.conf.lo.forwarding=1
           sudo sysctl -w net.netfilter.nf_conntrack_sctp_timeout_established=432000
+          sudo sysctl -w net.netfilter.nf_conntrack_count=10
           sudo sysctl -w net.ipv6.conf.docker0.forwarding=1
           sudo sysctl -w net.ipv4.conf.lo.accept_source_route=1
           sudo sysctl -w net.ipv4.conf.docker0.accept_source_route=1
@@ -175,6 +176,7 @@ jobs:
           sudo sysctl -w net.ipv6.conf.default.forwarding=1
           sudo sysctl -w net.ipv6.conf.lo.forwarding=1
           sudo sysctl -w net.netfilter.nf_conntrack_sctp_timeout_established=432000
+          sudo sysctl -w net.netfilter.nf_conntrack_count=10
           sudo sysctl -w net.ipv6.conf.docker0.forwarding=1
           sudo sysctl -w net.ipv4.conf.lo.accept_source_route=1
           sudo sysctl -w net.ipv4.conf.docker0.accept_source_route=1
