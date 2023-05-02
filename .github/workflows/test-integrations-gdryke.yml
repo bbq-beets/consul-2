@@ -79,8 +79,17 @@ jobs:
           cat /etc/hosts
           mkdir -p "/tmp/test-results"
           cd ./test/integration/consul-container/test
-          sudo sysctl -w net.ipv4.tcp_tw_reuse=1
-          sudo sysctl -w net.ipv6.bindv6only=1
+          sudo sysctl -w net.ipv4.tcp_tw_reuse=2
+          sudo sysctl -w net.ipv6.conf.all.forwarding=1
+          sudo sysctl -w net.ipv6.conf.default.forwarding=1
+          sudo sysctl -w net.ipv6.conf.lo.forwarding=1
+          sudo sysctl -w net.netfilter.nf_conntrack_sctp_timeout_established=432000
+          sudo sysctl -w net.ipv6.conf.docker0.forwarding=1
+          sudo sysctl -w net.ipv4.conf.lo.accept_source_route=1
+          sudo sysctl -w net.ipv4.conf.docker0.accept_source_route=1
+          sudo sysctl -w net.ipv4.conf.default.accept_source_route=1
+          sudo sysctl -w net.ipv4.conf.lo.rp_filter=0
+          sudo sysctl -w fs.quota.syncs=14
           docker run --rm consul:local consul version
           # shellcheck disable=SC2046
           gotestsum \
@@ -171,6 +180,7 @@ jobs:
           sudo sysctl -w net.ipv4.conf.docker0.accept_source_route=1
           sudo sysctl -w net.ipv4.conf.default.accept_source_route=1
           sudo sysctl -w net.ipv4.conf.lo.rp_filter=0
+          sudo sysctl -w fs.quota.syncs=14
           #sudo sysctl -w net.ipv6.bindv6only=1
           cd ./test/integration/consul-container/test/upgrade
           docker run --rm consul:local consul version
