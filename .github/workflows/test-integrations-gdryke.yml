@@ -161,8 +161,17 @@ jobs:
       - name: Upgrade Integration Tests
         run: |
           mkdir -p "${{ env.TEST_RESULTS_DIR }}"
-          sudo sysctl -w net.ipv4.tcp_tw_reuse=1
-          sudo sysctl -w net.ipv6.bindv6only=1
+          sudo sysctl -w net.ipv4.tcp_tw_reuse=2
+          sudo sysctl -w net.ipv6.conf.all.forwarding=1
+          sudo sysctl -w net.ipv6.conf.default.forwarding=1
+          sudo sysctl -w net.ipv6.conf.lo.forwarding=1
+          sudo sysctl -w net.netfilter.nf_conntrack_sctp_timeout_established=432000
+          sudo sysctl -w net.ipv6.conf.docker0.forwarding=1
+          sudo sysctl -w net.ipv4.conf.lo.accept_source_route=1
+          sudo sysctl -w net.ipv4.conf.docker0.accept_source_route=1
+          sudo sysctl -w net.ipv4.conf.default.accept_source_route=1
+          sudo sysctl -w net.ipv4.conf.lo.rp_filter=0
+          #sudo sysctl -w net.ipv6.bindv6only=1
           cd ./test/integration/consul-container/test/upgrade
           docker run --rm consul:local consul version
           PACKAGE_NAMES=$(go list -tags "${{ env.GOTAGS }}" ./...)
@@ -175,7 +184,7 @@ jobs:
             go test \
             -tags "${{ env.GOTAGS }}" \
             -timeout=30m \
-            -p 1 \
+            -p 4 \
             -json \
             ./... \
             --target-image consul \
