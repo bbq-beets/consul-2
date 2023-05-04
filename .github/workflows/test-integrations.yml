@@ -270,6 +270,7 @@ jobs:
               --raw-command \
               --format=standard-verbose \
               --debug \
+              --rerun-fails \
               -- \
               go test \
               -p=4 \
