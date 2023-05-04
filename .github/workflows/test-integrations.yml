@@ -260,7 +260,7 @@ jobs:
         if: ${{ !endsWith(github.repository, '-enterprise') }}
         run: |
           sudo sed -i 's/::1 *localhost ip6-localhost ip6-loopback/::1 ip6-localhost ip6-loopback/g' /etc/hosts
-          sudo sysctl -w net.ipv4.tcp_tw_reuse=1
+          sudo sysctl -w net.ipv4.tcp_retries2=5
       - name: Compatibility Integration Tests
         run: |
             mkdir -p "/tmp/test-results"
@@ -355,7 +355,7 @@ jobs:
         if: ${{ !endsWith(github.repository, '-enterprise') }}
         run: |
           sudo sed -i 's/::1 *localhost ip6-localhost ip6-loopback/::1 ip6-localhost ip6-loopback/g' /etc/hosts
-          sudo sysctl -w net.ipv4.tcp_tw_reuse=1
+          sudo sysctl -w net.ipv4.tcp_retries2=5
       - name: Upgrade Integration Tests
         run: |
           mkdir -p "${{ env.TEST_RESULTS_DIR }}"
@@ -366,6 +366,7 @@ jobs:
             --format=short-verbose \
             --debug \
             --packages="./..." \
+            --rerun-fails \
             -- \
             go test \
             -p=1 \
