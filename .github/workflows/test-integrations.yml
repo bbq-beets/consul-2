@@ -273,7 +273,7 @@ jobs:
               --rerun-fails \
               -- \
               go test \
-              -p=4 \
+              -p=3 \
               -tags "${{ env.GOTAGS }}" \
               -timeout=30m \
               -json \
@@ -370,7 +370,7 @@ jobs:
             --rerun-fails \
             -- \
             go test \
-            -p=4 \
+            -p=3 \
             -tags "${{ env.GOTAGS }}" \
             -timeout=30m \
             -json ./... \
