@@ -28,7 +28,7 @@ env:
 
 jobs:
   setup:
-    runs-on: imagegenteam-ubuntu2204-16cores
+    runs-on: aws-ubn22-runner
     name: Setup
     outputs:
       compute-small: ${{ steps.runners.outputs.compute-small }}
@@ -52,7 +52,7 @@ jobs:
       elevated-github-token: ${{ secrets.ELEVATED_GITHUB_TOKEN }}
 
   nomad-integration-test:
-    runs-on: imagegenteam-ubuntu2204-16cores
+    runs-on: aws-ubn22-runner
     needs:
       - setup
       - dev-build
@@ -94,7 +94,7 @@ jobs:
             --junitfile $TEST_RESULTS_DIR/results.xml -- \
             -run TestConsul
   vault-integration-test:
-    runs-on: imagegenteam-ubuntu2204-16cores
+    runs-on: aws-ubn22-runner
     needs:
       - setup
       - dev-build
@@ -139,7 +139,7 @@ jobs:
             -- -tags "${{ env.GOTAGS }}" -cover -coverprofile=coverage-agent.txt -run Vault ./agent
   generate-envoy-job-matrices:
     needs: [setup]
-    runs-on: imagegenteam-ubuntu2204-16cores
+    runs-on: aws-ubn22-runner
     name: Generate Envoy Job Matrices
     outputs:
       envoy-matrix: ${{ steps.set-matrix.outputs.envoy-matrix }}
@@ -173,7 +173,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
   
   envoy-integration-test:
-    runs-on: imagegenteam-ubuntu2204-16cores
+    runs-on: aws-ubn22-runner
     needs:
       - setup
       - generate-envoy-job-matrices
@@ -234,7 +234,7 @@ jobs:
           path: ${{ env.TEST_RESULTS_DIR }}
 
   compatibility-integration-test:
-    runs-on: imagegenteam-ubuntu2204-16cores
+    runs-on: aws-ubn22-runner
     needs:
       - setup
       - dev-build
@@ -273,7 +273,6 @@ jobs:
               --rerun-fails \
               -- \
               go test \
-              -p=2 \
               -tags "${{ env.GOTAGS }}" \
               -timeout=30m \
               -json \
@@ -296,7 +295,7 @@ jobs:
           path: ${{ env.TEST_RESULTS_DIR }}
 
   upgrade-integration-test:
-    runs-on: imagegenteam-ubuntu2204-16cores
+    runs-on: aws-ubn22-runner
     permissions:
       id-token: write # NOTE: this permission is explicitly required for Vault auth.
       contents: read
@@ -370,7 +369,6 @@ jobs:
             --rerun-fails \
             -- \
             go test \
-            -p=2 \
             -tags "${{ env.GOTAGS }}" \
             -timeout=30m \
             -json ./... \
@@ -400,7 +398,7 @@ jobs:
     - envoy-integration-test
     - compatibility-integration-test
     - upgrade-integration-test
-    runs-on: imagegenteam-ubuntu2204-16cores
+    runs-on: aws-ubn22-runner
     if: ${{ always() }}
     steps:
       - name: evaluate upstream job results
