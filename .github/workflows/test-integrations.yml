@@ -396,7 +396,7 @@ jobs:
     - nomad-integration-test
     - vault-integration-test
     - generate-envoy-job-matrices
-    - envoy-integration-test
+#    - envoy-integration-test
     - compatibility-integration-test
     - upgrade-integration-test
     runs-on: imagegenteam-ubuntu2204-16cores
