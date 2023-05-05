@@ -265,14 +265,14 @@ jobs:
         run: |
             mkdir -p "/tmp/test-results"
             cd ./test/integration/consul-container
-            docker run --rm ${{ env.CONSUL_LATEST_IMAGE_NAME }}:local consul version
-            go run gotest.tools/gotestsum@v${{env.GOTESTSUM_VERSION}} \
+            sudo docker run --rm ${{ env.CONSUL_LATEST_IMAGE_NAME }}:local consul version
+            sudo go run gotest.tools/gotestsum@v${{env.GOTESTSUM_VERSION}} \
               --raw-command \
               --format=standard-verbose \
               --debug \
               --rerun-fails \
               -- \
-              go test \
+             sudo go test \
               -tags "${{ env.GOTAGS }}" \
               -timeout=30m \
               -json \
@@ -350,7 +350,7 @@ jobs:
       - name: restore mode+x
         run: chmod +x consul
       - name: Build consul:local image
-        run: docker build -t ${{ env.CONSUL_LATEST_IMAGE_NAME }}:local -f ./build-support/docker/Consul-Dev.dockerfile .
+        run: sudo docker build -t ${{ env.CONSUL_LATEST_IMAGE_NAME }}:local -f ./build-support/docker/Consul-Dev.dockerfile .
       - name: Configure GH workaround for ipv6 loopback
         if: ${{ !endsWith(github.repository, '-enterprise') }}
         run: |
@@ -360,15 +360,15 @@ jobs:
         run: |
           mkdir -p "${{ env.TEST_RESULTS_DIR }}"
           cd ./test/integration/consul-container/test/upgrade
-          docker run --rm ${{ env.CONSUL_LATEST_IMAGE_NAME }}:local consul version
-          go run gotest.tools/gotestsum@v${{env.GOTESTSUM_VERSION}} \
+          sudo docker run --rm ${{ env.CONSUL_LATEST_IMAGE_NAME }}:local consul version
+          sudo go run gotest.tools/gotestsum@v${{env.GOTESTSUM_VERSION}} \
             --raw-command \
             --format=short-verbose \
             --debug \
             --packages="./..." \
             --rerun-fails \
             -- \
-            go test \
+            sudo go test \
             -tags "${{ env.GOTAGS }}" \
             -timeout=30m \
             -json ./... \
