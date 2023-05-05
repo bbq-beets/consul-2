@@ -117,7 +117,7 @@ jobs:
 
       - name: Install Vault
         run: |
-          rm -rf /tmp/*
+          sudo rm -rf /tmp/*
           wget -q -O /tmp/vault.zip "https://releases.hashicorp.com/vault/${{ env.VAULT_BINARY_VERSION }}/vault_${{ env.VAULT_BINARY_VERSION }}_linux_amd64.zip"
           unzip -d /tmp /tmp/vault.zip
           echo "/tmp" >> $GITHUB_PATH
@@ -274,6 +274,7 @@ jobs:
               --rerun-fails \
               -- \
              sudo go test \
+              -p=3 \
               -tags "${{ env.GOTAGS }}" \
               -timeout=30m \
               -json \
@@ -370,6 +371,7 @@ jobs:
             --rerun-fails \
             -- \
             sudo go test \
+            --p=3 \
             -tags "${{ env.GOTAGS }}" \
             -timeout=30m \
             -json ./... \
